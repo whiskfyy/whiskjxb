@@ -1,0 +1,91 @@
+<!--{eval
+    $_HEAD['title'] = $detail[name].$detail[subname] . '的相册';
+}-->
+{template modoer_header}
+<style type="text/css">@import url("{URLROOT}/static/images/gallery/gallery.css");</style>
+<script type="text/javascript" src="{URLROOT}/static/javascript/jquery.ad-gallery.pack.js"></script>
+<script type="text/javascript">
+  $(function() {
+    var galleries = $('.ad-gallery').adGallery();
+    $('#switch-effect').change(
+      function() {
+        galleries[0].settings.effect = $(this).val();
+        return false;
+      }
+    );
+    $('#toggle-slideshow').click(
+      function() {
+        galleries[0].slideshow.toggle();
+        return false;
+      }
+    );
+    $('#toggle-description').click(
+      function() {
+        if(!galleries[0].settings.description_wrapper) {
+          galleries[0].settings.description_wrapper = $('#descriptions');
+        } else {
+          galleries[0].settings.description_wrapper = false;
+        }
+        return false;
+      }
+    );
+  });
+</script>
+<div id="body">
+
+	<div class="link_path">
+		<em><span class="update-img-ico"><a href="{url item/member/ac/pic_upload/sid/$sid}">上传图片</a></span></em>
+		<a href="{url modoer/index}">{lang global_index}</a>&nbsp;&raquo;&nbsp;{print implode('&nbsp;&raquo;&nbsp;', $urlpath)}
+	</div>
+
+	<div id="pic_left">
+		<div id="gallery" class="ad-gallery">
+			<div class="ad-image-wrapper">
+			</div>
+			<div class="ad-controls">
+			</div>
+			<div class="ad-nav">
+				<div class="ad-thumbs">
+					<ul class="ad-thumb-list">
+						{eval $index=0;}
+						{dbres $list $val}
+						<li>
+							<a href="{URLROOT}/$val[filename]"><img src="{URLROOT}/$val[thumb]" class="image{$index}" title="$val[title] / $val[username] / {date $val[addtime],'Y-m-d'}" alt="$val[comments]" longdesc="$val[url]"></a>
+						</li>
+						{eval $index++;}
+						{/dbres}
+					</ul>
+				</div>
+			</div>
+		</div>
+    </div>
+
+    <div id="pic_right">
+		<!--{if $subject}-->
+		<div class="mainrail rail-border-1">
+			<h2 class="rail-h-2 rail-h-bg-1"><b><a href="{url item/detail/id/$subject[sid]}"><span class="font_2">$subject[name]&nbsp;$subject[subname]</span></a></b></h2>
+			<div class="side_subject">
+                    <!--{eval $itemcfg=$_G['loader']->variable('config','item');}-->
+                    <p class="start start{print get_star($subject[avgsort],$itemcfg[scoretype])}"></p>
+                    <table class="subject_field_list" border="0" cellspacing="0" cellpadding="0">
+                        <tr>
+                            <td colspan="2"><span class="font_2">$subject[reviews]</span>点评,
+                            <span class="font_2">$subject[guestbooks]</span>留言,
+                            <span class="font_2">$subject[pageviews]</span>浏览</td>
+                        </tr>
+                        $subject_field_table_tr
+                    </table>
+                    <a class="abtn1" href="{url item/member/ac/review_add/sid/$subject[sid]}"><span>我要点评</span></a>
+                    <a class="abtn2" href="javascript:add_favorite($subject[sid]);"><span>收藏</span></a>
+                    <a class="abtn2" href="{url item/detail/id/$subject[sid]/view/guestbook}#guestbook"><span>留言</span></a>
+                    <div class="clear"></div>
+			</div>
+		</div>
+		<!--{/if}-->
+        </div>
+    </div>
+
+	<div class="clear"></div>
+
+</div>
+<!--{eval footer();}-->

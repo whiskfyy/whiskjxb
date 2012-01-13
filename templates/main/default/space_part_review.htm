@@ -1,0 +1,61 @@
+<script type="text/javascript" src="{URLROOT}/static/javascript/review.js"></script>
+<!--{if $reviews}-->
+<!--{dbres $reviews $val}-->
+<!--  
+                        {eval 
+							if(isset($val['subject'])) $val_subject = substr($val['subject'],0,10).'********';
+						}
+					-->
+<div class="review">
+    <div class="field f_w_item">
+        <div class="feed">
+        <!--{if $val[uid]}-->
+            <em>
+                <span class="respond-ico"><a href="javascript:get_respond('$val[rid]');">回应</a></span>(<span class="font_2" id="respond_$val[rid]">$val[responds]</span> 条)&nbsp;
+                <span class="flower-ico"><a href="javascript:add_flower($val[rid], $val[pcatid]);">鲜花</a>(<a href="javascript:get_flower($val[rid], $val[pcatid]);"><span id="flower_$val[rid]" class="font_2">$val[flowers]</span> 朵</a>)</span>&nbsp;
+                <a href="javascript:post_report($val[rid], $val[pcatid]);">举报</a>
+            </em>
+            <span class="member-ico"><a href="{url space/index/uid/$val[uid]}">$val[username]</a></span>
+            <!--{else}-->
+            <span class="font_3">游客({print preg_replace("/^([0-9]+)\.([0-9]+)\.([0-9]+)\.([0-9]+)$/","\\1.\\2.*.*", $val[ip])})</span>
+            <!--{/if}-->
+            在&nbsp;{date $val[posttime], 'w2style'}&nbsp;点评了&nbsp;<strong><a href="{print:review typeurl(idtype/$val[idtype]/id/$val[id])}">$val_subject</a></strong>
+        </div>
+        <div class="info">
+            <ul class="score">
+                {get:item _val=reviewopt(catid/$val[pcatid])}
+                
+                <li>$_val[name]</li><li class="start{print cfloat($val[$_val[flag]])}"></li>
+                <!--{/get}-->
+            </ul>
+            <div class="clear"></div>
+            {if $val[title]!=$val[subject]}<h4 class="title"><a href="{url review/detail/id/$val[rid]}">$val[title]</a></h4>{/if}
+            <p>{print nl2br($val[content])}</p>
+            <ul class="params">
+                <!--{if $val[price] && $config['useprice']}-->
+                <li>$config[useprice_title]: <span class="font_2">$val[price]{$config[useprice_unit]}</span></li>
+                <!--{/if}-->
+                <!--{eval $detail_tags = $val['taggroup'] ? @unserialize($val['taggroup']) : array();}-->
+                <!--{loop $taggroups $_key $_val}-->
+                    <!--{if $detail_tags[$_key]}-->
+                        <li>$_val[name]:
+                        <!--{loop $detail_tags[$_key] $tagid $tagname}-->
+                            <a href="{url item/tag/tagname/$tagname}">$tagname</a>
+                        <!--{/loop}-->
+                        </li>
+                    <!--{/if}-->
+                <!--{/loop}-->
+            </ul>
+            <div id="flowers_$val[rid]"></div>
+            <div id="responds_$val[rid]"></div>
+        </div>
+    </div>
+    <div class="clear"></div>
+</div>
+<!--{/dbres}-->
+<!--{if $multipage}--><div class="multipage">$multipage</div><!--{/if}-->
+<!--{else}-->
+<div class="messageborder">
+    <span class="msg-ico">暂时没有信息。</span>
+</div>
+<!--{/if}-->

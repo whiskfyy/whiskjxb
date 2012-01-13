@@ -1,0 +1,134 @@
+body{
+  margin-top:0;
+  font-family: Verdana;
+  font-size: 14px;
+}
+table{
+  width: 100%;
+  font-size: 12px;
+  margin-bottom: 5px;
+  border: 1px solid #330000;
+}
+table .t_input{
+  font-family: Verdana;
+  font-size:12px;
+  border: 1px solid #CCCCCC;
+  padding:1px 2px;
+  height: 18px;
+  line-height: 18px;
+  width: 200px;
+}
+td{
+  padding: 3px 5px;
+}
+button{
+  border: 1px solid #330000;
+  background: #eee;
+  height: 25px;
+}
+#main{
+  margin-top:20px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 768px;
+}
+#subject{
+  margin-top: 10px;
+  font-size: 16px;
+  border-bottom: 1px solid #5A5A5A;
+
+  margin-bottom: 10px;
+}
+#title{
+  float: left;
+  width: 400px;
+}
+#copyright{
+  margin-top: 3px;
+  float: right;
+  font-size: 11px;
+  font-weight: normal;
+  text-align: right;
+  width: 250px;
+}
+#step{
+  padding: 10px 0;
+}
+#tbth{
+  background: #A20000;
+  font-size: 12px;
+  color: #FFFFFF;
+}
+#msg{
+  padding-bottom: 10px;
+  line-height: 21px;
+}
+#comment{
+  padding:10px 0;
+}
+#next{
+  border-top: 1px solid #5A5A5A;
+  padding: 10px 0;
+  text-align: right;
+}
+#error{
+  padding: 5px 10px;
+  margin-bottom: 10px;
+  line-height: 18px;
+  font-size: 12px;
+  background: #FFF5F0;
+  color: #FF3300;
+  border: 1px solid #FFBFBF;
+}
+#control{
+  padding:10px 0;
+}
+#progress{
+  padding: 5px;
+  background: #EBEBEB;
+  margin-bottom: 10px;
+  font-size: 12px;
+  line-height: 16px;
+}
+.licenseblock{ 
+    margin-bottom:5px;
+    padding:8px;
+    height:400px; 
+    background:#FFF; 
+    overflow:scroll; 
+    overflow-x:hidden; 
+    background: #F7FBFF;
+}
+.license h1{ 
+    padding-bottom:10px; 
+    font-size:14px; 
+    text-align:center; 
+}
+.license h3{ 
+    margin:0; 
+    color:#666; 
+}
+.license p{ 
+    line-height:150%; 
+    margin:10px 0; 
+    text-indent:25px; 
+}
+.license li{ 
+    line-height:150%; 
+    margin:5px 0; 
+}
+.title{ 
+    margin:5px 0 -15px 60px; 
+}
+.font_1{
+  color: red;
+}
+.font_2{
+  color: #FF6600;
+}
+.font_3{
+  color: #006600;
+}
+.clear{
+    clear:both;
+}

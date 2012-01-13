@@ -1,0 +1,89 @@
+{template modoer_header}
+
+<div id="body">
+    <div class="myhead"></div>
+    <div class="mymiddle">
+        <div class="myleft">
+            <!--{template 'menu','member','member'}-->
+        </div>
+        <div class="myright">
+            <div class="myright_top"></div>
+            <div class="myright_middle">
+                <h3>积分兑换</h3>
+                <div class="mainrail">
+                    <form method="post" name="myform" action="{url ucenter/member/ac/$ac/rand/$_G[random]}" onsubmit="return check_exchange(this);">
+                    <table width="100%" cellspacing="0" cellpadding="0" class="maintable">
+                        <tr>
+                            <td width="60" align="right">我的家当：</td>
+                            <td width="*"><span class="font_1">$user->coin</span>&nbsp;金币</td>
+                        </tr>
+                        <tr>
+                            <td width="60" align="right">兑换比率：</td>
+                            <td width="*"><span class="font_1"><span id="a_num">1</span></span>&nbsp;金币&nbsp;兑换&nbsp;<span class="font_1"><span id="r_num"></span></span>&nbsp;<span id="a_unit"></span><span id="a_title"></span></td>
+                        </tr>
+                        <tr>
+                            <td align="right">支出：</td>
+                            <td><input type="text" class="text" size="15" name="amount" id="amount" value="0" onkeyup="calcredit();" style="width:120px;" />
+                                <select name=""><option value="">金币</option></select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="right">收入：</td>
+                            <td><input type="text" class="text" id="desamount" style="width:120px;" disabled />
+                                <select name="tocredits" id="tocredits" onChange="calcredit();">
+                                <!--{loop $outextcredits $id $ecredits}-->
+                                    <!--{if $ecredits[ratio]}-->
+                                    <option value="$id" unit="$ecredits[unit]" title="$ecredits[title]" ratio="$ecredits[ratio]">$ecredits[title]</option>
+                                    <!--{/if}-->
+                                <!--{/loop}-->
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="right">密码：</td>
+                            <td><input type="password" name="password_credits" class="text" /></td>
+                        </tr>
+                        <tr>
+                            <td>&nbsp;</td>
+                            <td><button type="submit" name="dosubmit" value="yes">&nbsp;兑&nbsp;换&nbsp;</button></td>
+                        </tr>
+                    </table>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="clear"></div>
+    </div>
+    <div class="mybottom"></div>
+</div>
+<script type="text/javascript">
+function check_exchange(form) {
+    if(toInt(form.amount) <= 0) {
+        alert('支出的金币必须大于0.');
+        return false;
+    } else if(form.password_credits.value.length == 0) {
+        alert('未输入密码.');
+        return false;
+    }
+    return confirm('兑换操作不可恢复, 您确定进行本次兑换吗?');
+}
+
+function calcredit() {
+    var tocredits = document.getElementById('tocredits');
+    var tocredit = tocredits[tocredits.selectedIndex];
+    var ratio = Math.round(((1 / tocredit.getAttribute('ratio')) * 100)) / 100;
+    document.getElementById('amount').value = toInt(document.getElementById('amount'));
+    document.getElementById('a_unit').innerHTML = tocredit.getAttribute('unit');
+    document.getElementById('a_title').innerHTML = tocredit.getAttribute('title');
+    document.getElementById('r_num').innerHTML = ratio;
+    document.getElementById('desamount').value = Math.floor(1 / tocredit.getAttribute('ratio') * document.getElementById('amount').value);
+}
+
+function toInt(input) {
+    var s = parseInt(input.value);
+    return isNaN(s) ? 0 : s;
+}
+
+calcredit();
+</script>
+<!--{eval footer();}-->

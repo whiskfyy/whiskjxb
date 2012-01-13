@@ -1,0 +1,163 @@
+<!--{eval 
+    $_HEAD['title'] = $pcat[$pid]['name']. '大全' .
+        ($catid != $pid ? ($_CFG['titlesplit'] . $pcat[$catid]['name']) : '' ) .
+        ($boroughs[$aid] ? ($_CFG['titlesplit'] . $boroughs[$aid]) : '' ) .
+        ($streets[$aid] ? ($_CFG['titlesplit'] . $streets[$aid]) : '' );
+}-->
+{template modoer_header}
+<div id="body">
+	<div id="list_left">
+    <div class="catefoot">
+        <div class="link_path">
+            <em><a href="{url review/list/type/item_subject/catid/$catid}">最新点评</a>&nbsp;-&nbsp;<a href="{url item/allpic/catid/$catid}">{$pcat[$pid][name]}图片</a>&nbsp;-&nbsp;<a href="{url item/top/catid/$catid}">最佳排行</a>&nbsp;-&nbsp;<a href="{url item/detail/random/1}">随便看看</a></em>
+            <a href="{url modoer/index}">首页</a>&nbsp;&raquo;&nbsp;{print implode('&nbsp;&raquo;&nbsp;', $urlpath)}<span class="font_3">($total)</span>
+        </div>
+        <!--{if $category_level<=2 && $subcats}-->
+        <ul class="cate">
+            <h2>按分类查找:</h2>
+            <!--{get:item val=category(pid/$catid)}-->
+            <li><span{if $val[catid]==$catid} class="selected"{/if}><a href="{url item/list/catid/$val[catid]/aid/$aid}">$val[name]</a></span></li>
+            <!--{/get}-->
+        </ul>
+		<!--{else}-->
+        <ul class="cate">
+            <h2>按分类查找:</h2>
+            <!--{get:item val=category(pid/$category[$catid][pid])}-->
+            <li><span{if $val[catid]==$catid} class="selected"{/if}><a href="{url item/list/catid/$val[catid]/aid/$aid}">$val[name]</a></span></li>
+            <!--{/get}-->
+        </ul>
+        <!--{/if}-->
+        <div class="clear"></div>
+        <!--{if $model['usearea']}-->
+        <ul class="cate">
+            <h2>按地区查找:</h2>
+            <li><span{if !$aid} class="selected"{/if}><a href="{url item/list/catid/$catid/}">全部地区</a></span></li>
+            <!--{loop $boroughs $key $val}-->
+            <li><span{if $aid==$key||$paid==$key} class="selected"{/if}><a href="{url item/list/catid/$catid/aid/$key}">$val</a></span></li>
+            <!--{/loop}-->
+        </ul>
+        <div class="clear"></div>
+        <!--{if $streets}-->
+        <ul class="cate">
+            <h2>按街道查找：</h2>
+            <!--{loop $streets $key $val}-->
+                <li><span{if $aid==$key} class="selected"{/if}><a href="{url item/list/catid/$catid/aid/$key}">$val</a></span></li>
+            <!--{/loop}-->
+        </ul>
+        <!--{/if}-->
+        <!--{/if}-->
+        <div class="clear"></div>
+        <!--{if $catcfg['attcat']}-->
+        <!--{eval $att_cats = $_G['loader']->variable('att_cat','item');}-->
+        <!--{loop $catcfg['attcat'] $att_catid}-->
+        <!--{if $att_cats[$att_catid]}-->
+        <ul class="cate">
+            <h2>按{$att_cats[$att_catid][name]}查找:</h2>
+            <!--{eval $att_url = item_att_url($att_catid,0,1);}-->
+            <li><span{if !$atts[$att_catid]} class="selected"{/if}><a href="{url item/list/catid/$catid/att/$att_url}">全部</a></span></li>
+            <!--{get:item val=attlist(catid/$att_catid)}-->
+            <!--{eval $att_url = item_att_url($att_catid,$val_k);}-->
+            <li><span{if $atts[$att_catid]==$val_k} class="selected"{/if}><a href="{url item/list/catid/$catid/aid/$aid/att/$att_url}">$val</a></span></li>
+            <!--{/get}-->
+        </ul>
+        <div class="clear"></div>
+        <!--{/if}-->
+        <!--{/loop}-->
+        <!--{/if}-->
+    </div>
+
+    <div class="subrail">
+        显示: <!--{loop $typelist $key $val}-->
+        <span$active[type][$key]><a href="javascript:;" onclick="list_display('item_subject_type','$key')">$val</a></span>
+        <!--{/loop}-->&nbsp;|&nbsp;
+        数量: <!--{loop $numlist $val}-->
+        <span$active[num][$val]><a href="javascript:;" onclick="list_display('item_subject_num','$val')">$val</a></span>
+        <!--{/loop}-->&nbsp;|&nbsp;
+        排序:<!--{loop $orderlist $key $val}-->
+        <span$active[orderby][$key]><a href="javascript:;" onclick="list_display('item_subject_orderby','$key')">$val</a></span>
+        <!--{/loop}-->
+    </div>
+
+    <div class="mainrail">
+        <!--{if $type == 'pic'}-->
+        {template item_subject_list_pic}
+        <!--{else}-->
+        {template item_subject_list_normal}
+        <!--{/if}-->
+        </div>
+        <!--{if $multipage}--><div class="multipage">$multipage</div><!--{/if}-->
+    </div>
+
+    <div id="list_right">
+
+        <div class="mainrail">
+            <em>
+                <span class="selected" id="btn_subject1" onclick="tabSelect(1,'subject')">热门</span>
+                <!--{if $catcfg[useeffect]}-->
+                {if $catcfg[effect1]}<span class="unselected" id="btn_subject2" onclick="tabSelect(2,'subject')">$catcfg[effect1]</span>{/if}
+                {if $catcfg[effect1]}<span class="unselected" id="btn_subject3" onclick="tabSelect(3,'subject')">$catcfg[effect2]</span>{/if}
+                <!--{/if}-->
+            </em>
+            <h3 class="rail-h-1 rail-h-bg-5">热门$model[item_name]</h3>
+            <div id="subject1">
+                <!--{eval $reviewcfg = $_G['loader']->variable('config','review');}-->
+                <ul class="rail-pic">
+                    {get:modoer val=table(table/dbpre_subject/select/sid,pid,catid,name,subname,reviews,avgsort,pageviews,thumb/where/pid='$pid' AND pageviews>0/orderby/pageviews DESC/rows/5)}
+                    {eval 
+						    if(isset($val['name'])) $val_name = substr($val['name'],0,10).'********';
+						}
+                    <li>
+                        <div class="pic">
+                            <a href="{url item/detail/id/$val[sid]}"><img src="{URLROOT}/{if $val[thumb]}$val[thumb]{else}static/images/s_noimg.gif{/if}" alt="$val_name $val[subname]" /></a>
+                        </div>
+                        <div class="info">
+                            <a href="{url item/detail/id/$val[sid]}" title="$val_name $val[subname]">{sublen $val_name.$val[subname],18}</a><br />
+                            <span class="font_2"><b>$val[pageviews]</b></span>浏览,<span class="font_2"><b>$val[reviews]</b></span>点评
+                            <p class="start{print get_star($val[avgsort], $reviewcfg[scoretype])}" style="margin:0;padding:0;height:15px;"></p>
+                        </div>
+                        <div class="clear"></div>
+                    </li>
+                    {/get}
+                </ul>
+            </div>
+            <!--{if $catcfg[useeffect]}-->
+            <div class="none" id="subject2" datacallname="主题_会员参与" params="{'pid':'$pid','idtype':'$model[tablename]','effect':'effect1'}"></div>
+            <div class="none" id="subject3" datacallname="主题_会员参与" params="{'pid':'$pid','idtype':'$model[tablename]','effect':'effect2'}"></div>
+            <!--{/if}-->
+        </div>
+        <div class="mainrail">
+            <h3 class="rail-h-1 rail-h-bg-5">热门分类</h3>
+            <div id="hot_category">
+                <ul class="rail-list">
+                    {get:modoer val=table(table/dbpre_category/select/catid,pid,name,total/where/pid=$pid AND total>0/orderby/total DESC/rows/10)}
+                    <li><cite>$val[total]&nbsp;个</cite><a href="{url item/list/catid/$val[catid]}">$val[name]</a></li>
+                    {/get}
+                </ul>
+            </div>
+        </div>
+
+        <!--{if $cookie_subjects}-->
+        <div class="mainrail" id="cookieitems">
+            <em><a href="javascript:clear_cookie_subject($pid);">清除记录</a></em>
+            <h3 class="rail-h-1 rail-h-bg-5">历史浏览</h3>
+            <ul class="rail-list">
+                <!--{loop $cookie_subjects $key $val}-->
+                <li><a href="{url item/detail/id/$key}" title="$val">$val</a></li>
+                <!--{/loop}-->
+            </ul>
+        </div>
+        <!--{/if}-->
+
+	</div>
+
+    <div class="clear"></div>
+
+</div>
+<div id="adv_1_content" style="display:none;">
+<!--{include display('adv:show','name/主题列表页_列表间广告')}-->
+</div>
+<script type="text/javascript">
+//加载广告
+replace_content('adv_1=adv_1_content');
+</script>
+<!--{eval footer();}-->

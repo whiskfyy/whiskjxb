@@ -1,0 +1,8 @@
+.mdialog { border:solid #FFEECA 7px; background:#FFF8F4; }
+    .mdialog .mheader { padding: 0 6px; line-height:35px; font-size:14px; cursor:move;}
+        .mdialog .mheader em { float:right; background:url(mdialog/close.gif) no-repeat; width:16px; height:16px; cursor:pointer; margin-top:6px; }
+        .mdialog .mheader span { font-weight:bold; color:#FF9900; }
+    .mdialog .mbody { margin:5px 10px; line-height:16px; font-size:12px; }
+
+.mmessage { border:solid #FFEECA 7px; background:#FFF8F4; text-align:center;}
+.mmessage .mbody { }

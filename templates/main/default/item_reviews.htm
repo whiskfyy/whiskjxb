@@ -1,0 +1,170 @@
+<!--{eval 
+    $_HEAD['title'] = $day_arr[$day] . 
+        $_CFG['titlesplit'] . $rootclasses[$pid] . '点评大全' .
+        $_CFG['titlesplit'] . $type_arr[$type];
+}-->
+{template modoer_header}
+<div id="body">
+    <div class="link_path">
+        <em><a href="{url item/top/catid/$pid}">{lang item_top_title}</a>&nbsp;-&nbsp;<a href="{url item/allpic/catid/$pid}">{lang item_allpic_title}</a></em>
+        <a href="{url modoer/index}">{lang global_index}</a>&raquo;&nbsp;{print implode('&nbsp;&raquo;&nbsp;', $urlpath)}</span>
+    </div>
+
+	<div class="category">
+
+		<div class="type">
+			<div class="class">
+				<!--{loop $rootclasses $key $val}-->
+				<span{if $pid==$key} class="selected"{/if}><a href="{url item/reviews/catid/$key/type/$type/day/$day}">$val</a></span>
+				<!--{/loop}-->
+			</div>
+			<h3>点评分类:</h3>
+		</div>
+
+		<div class="type">
+			<div class="class">
+                <!--{loop $type_arr $key $val}-->
+                <span$active[type][$key]><a href="{url item/reviews/catid/$catid/type/$key/day/$day}">$val</a></span>
+                <!--{/loop}-->
+			</div>
+			<h3>排序方式:</h3>
+		</div>
+
+		<div class="type">
+			<div class="class">
+                <!--{loop $day_arr $key $val}-->
+                <span$active[day][$key]><a href="{url item/reviews/catid/$catid/type/$key/day/$key}">$val</a></span>
+                <!--{/loop}-->
+			</div>
+			<h3>时间范围:</h3>
+		</div>
+
+		<div class="clear"></div>
+	</div>
+
+    <div id="left">
+        <!--{if $uid > 0}-->
+        {template space_side}
+        <!--{else}-->
+        <div class="mainrail rail-border-1">
+            <h3 class="rail-h-1 rail-h-bg-1">点评专家</h3>
+            <ul class="rail-list">
+                <!--{get:modoer val=table(table/dbpre_members/select/uid,username,reviews/where/reviews>0/orderby/reviews DESC/rows/10/cachetime/3600)}-->
+                <li><img src="{print get_face($val[uid]);}" width="20" height="20" /><cite>$val[reviews]&nbsp;点评</cite><a href="{url space/index/uid/$val[uid]}">$val[username]</a></li>
+                <!--{/get}-->
+            </ul>
+            <div class="clear"></div>
+        </div>
+        <div class="mainrail rail-border-1">
+            <h3 class="rail-h-1 rail-h-bg-1">本月活跃会员</h3>
+            <!--{eval
+                $begintime = date('Ymd', $_G['timestamp'] - 30 * 24 * 3600);
+                $endtime = date('Ymd', $_G['timestamp']);
+            }-->
+            <ul class="rail-faces">
+                <!--{get:modoer val=sql(sql/SELECT uid,username,SUM(reviews) as reviews FROM dbpre_activity WHERE dateline BETWEEN $begintime AND $endtime GROUP BY username ORDER BY reviews DESC,subjects DESC/rows/9/cachetime/3600)}-->
+                <li><div><a href="{url space/index/uid/$val[uid]}"><img src="{print get_face($val[uid])}" /></a><a href="{url space/index/uid/$val[uid]}" title="$val[username]"></div><span>$val[username]</span></a></li>
+                <!--{/get}-->
+            </ul>
+            <div class="clear"></div>
+        </div>
+        <!--{/if}-->
+    </div>
+    <div id="right">
+        <div class="rail-border-2">
+            <h3 class="rail-h-2 rail-h-bg-2">最新点评</h3>
+
+            <!--{if $total}-->
+
+            <div class="mainrail reviews">
+
+            <!--{dbres $list $val}-->
+            <div class="review">
+                <div class="member m_w_item">
+                    <a href="{url space/index/uid/$val[uid]}"><img src="{print get_face($val[uid])}" class="face"></a>
+                    <ul>
+                        <!--{if $val[uid]}-->
+                        <li>{print:member group(groupid/$val[groupid])}</li>
+                        <li>积分:<span>$val[point]</span></li>
+                        <li>金币:<span>$val[coin]</span></li>
+                        <!--{else}-->
+                        <li>游客</li>
+                        <!--{/if}-->
+                    </ul>
+                </div>
+                <div class="field f_w_item">
+
+                    <div class="feed">
+
+                    <!--{if $val[uid]}-->
+                        <em><a href="javascript:send_message($val[uid]);">发短信</a>, <a href="javascript:add_friend($val[uid]);">加好友</a></em>
+                        <span class="member-ico"><a href="{url space/index/uid/$val[uid]}">$val[username]</a></span>&nbsp;(&nbsp;<a href="javascript:send_message($val[uid]);">发短信</a>, <a href="javascript:add_friend($val[uid]);">加好友</a>&nbsp;)
+                        <!--{else}-->
+                        <span class="font_3">游客({print preg_replace("/^([0-9]+)\.([0-9]+)\.([0-9]+)\.([0-9]+)$/","\\1.\\2.*.*", $val[ip])})</span>
+                        <!--{/if}-->
+                        在&nbsp;{date $val[posttime], 'w2style'}&nbsp;点评了&nbsp;<strong><a href="{url item/detail/id/$val[sid]}">$val[name]&nbsp;$val[subname]</a></strong>
+                    </div>
+
+                    <div class="info">
+                        <ul class="score">
+                            <!--{loop $reviewpot $_val}-->
+                            <li>$_val[name]</li><li class="start{print cfloat($val[$_val[flag]])}"></li>
+                            <!--{/loop}-->
+                        </ul>
+                        <div class="clear"></div>
+                        <!--{if $val[pictures]}-->
+                        <div class="pictures">
+                            <!--{eval $val[pictures] = unserialize($val[pictures]);}-->
+                            <!--{loop $val[pictures] $pic}-->
+                            <a href="{URLROOT}/$pic[picture]"><img src="{URLROOT}/$pic[thumb]" onmouseover="tip_start(this);" /></a>
+                            <!--{/loop}-->
+                        </div>
+                        <!--{/if}-->
+                        <div style="min-height:68px;">
+                            {if $val[title]!=$val[name].$val[subname]}<h4 class="title">$val[title]</h4>{/if}
+                            <p>{print nl2br($val[content])}</p>
+                            <ul class="params">
+                                <!--{if $val[price] && $catcfg['useprice']}-->
+                                <li>$catcfg[useprice_title]: <span class="font_2">$val[price]{$catcfg[useprice_unit]}</span></li>
+                                <!--{/if}-->
+                                <!--{eval $detail_tags = $val['taggroup'] ? @unserialize($val['taggroup']) : array();}-->
+                                <!--{loop $taggroups $_key $_val}-->
+                                    <!--{if $detail_tags[$_key]}-->
+                                        <li>$_val[name]:
+                                        <!--{loop $detail_tags[$_key] $tagid $tagname}-->
+                                            <a href="{url item/tag/tagname/$tagname}">$tagname</a>
+                                        <!--{/loop}-->
+                                        </li>
+                                    <!--{/if}-->
+                                <!--{/loop}-->
+                            </ul>
+                        </div>
+                        <div id="flowers_$val[rid]"></div>
+                        <div id="responds_$val[rid]"></div>
+                        <div class="operation">
+                            <span class="respond-ico"><a href="javascript:get_respond('$val[rid]');">回应</a></span>(<span class="font_2" id="respond_$val[rid]">$val[responds]</span> 条)&nbsp;
+                            <span class="flower-ico"><a href="javascript:add_flower($val[rid], $val[pcatid]);">鲜花</a>(<a href="javascript:get_flower($val[rid], $val[pcatid]);"><span id="flower_$val[rid]" class="font_2">$val[flowers]</span> 朵</a>)</span>&nbsp;
+                            <a href="javascript:post_report($val[rid], $val[pcatid]);">举报</a>&nbsp;
+                        </div>
+                    </div>
+
+                </div>
+                <div class="clear"></div>
+            </div>
+            <!--{/dbres}-->
+
+            <!--{if $multipage}--><div class="multipage">$multipage</div><!--{/if}-->
+
+            </div>
+
+            <!--{else}-->
+
+            <div class="messageborder">近期没有会员进行点评</a>。</div>
+
+            <!--{/if}-->
+
+        </div>
+    </div>
+</div>
+
+<!--{eval footer();}-->

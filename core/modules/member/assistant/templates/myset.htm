@@ -1,0 +1,45 @@
+{template modoer_header}
+<script type="text/javascript">
+loadscript("mdialog");
+function change_password () {
+	$.post(Url('member/index/ac/myset/op/changepw'), {in_ajax:1}, 
+		function(result) {
+		if (result.match(/<form.+method="post".+>/)) {
+			dlgOpen('修改密码', result, 300, 170);
+		} else {
+			myAlert(result);
+		}
+	});
+}
+</script>
+<div id="body">
+<div class="myhead"></div>
+<div class="mymiddle">
+    <div class="myleft">
+        <!--{template 'menu','member','member'}-->
+    </div>
+    <div class="myright">
+        <div class="myright_top"></div>
+        <div class="myright_middle">
+            <h3>我的设置</h3>
+            <div class="mainrail">
+                <form method="post" action="index.php?ac=$ac" name="mysetfrm">
+                    <table width="100%" cellspacing="0" cellpadding="0" class="maintable">
+                        <tr><td align="right">用户名：</td><td>$user->username</td></tr>
+                        <tr><td width="80" align="right">电子邮件：</td><td>$user->email</td></tr>
+                        <tr>
+                            <td align="right">登录密码：</td>
+                            <td>*********&nbsp;<!--{if $user->passport['enable']}-->[<a href="$user->passport['cpwd_url']">修改</a>]<!--{else}-->[<a href="javascript:change_password();">修改</a>]<!--{/if}-->
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="clear"></div>
+</div>
+<div class="mybottom"></div>
+</div>
+ 
+<!--{eval footer();}-->

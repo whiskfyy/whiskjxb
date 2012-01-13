@@ -1,0 +1,162 @@
+<!--{if !defined('IN_AJAX')}-->
+{template modoer_header}
+<style type="text/css">
+.review_picture_upload { margin:5px 0; }
+.review_picture_op { float:left; text-align:center; width:110px; }
+.review_picture_op img { display:block; max-width:100px; max-height:100px; padding:1px; border:1px solid #ccc;
+    _width:expression(this.width > 100 ? 100 : true); _height:expression(this.height > 100 ? 100 : true); }
+</style>
+<script type="text/javascript">
+function select_search(x) {
+    $('#search_result').css('display','').html(x);
+    $("#search_result li").each(function(i) { 
+        $(this).mouseover(function(){$(this).css("background","#C1EBFF")})
+            .mouseout(function(){$(this).css("background","#FFF")})
+            .click(function(){
+            //alert(Url('item/member/ac/$ac/sid/'+$(this).attr('sid')));return;
+                document.location = Url('item/member/ac/$ac/sid/'+$(this).attr('sid'));
+            });
+    });
+    $('#search_result').append('<div><a href="{url item/member/ac/subject_add}"><span class="font_1">以上都不是，我要添加新主题</span></a></div>');
+}
+
+$(document).ready(function() {
+    if($('#keyword')[0] != null) {
+        $('#keyword').keydown(function(e) {
+            keynum = window.event ? e.keyCode : e.which;
+            if(keynum == 13) search_subject('keyword', select_search);
+        });
+    }
+});
+</script>
+<div id="body">
+<div class="myhead"></div>
+<div class="mymiddle">
+    <div class="myleft">
+        <!--{template 'menu','member','member'}-->
+    </div>
+    <div class="myright">
+        <div class="myright_top"></div>
+        <div class="myright_middle">
+            <h3>
+                {if $ac=='review_edit'}编辑点评{else}添加点评{/if}
+                {if !$user->isLogin}(游客){/if}
+            </h3>
+<!--{/if}-->
+            <div class="mainrail" id="review_foot">
+            <!--{if $ac=='review_add' && !$sid}-->
+                <table width="100%" cellspacing="0" cellpadding="0" class="maintable">
+                    <tr>
+                        <td width="100" align="right">主题名称：</td>
+                        <td width="*">
+                            <input type="text" name="keyword" id="keyword" class="t_input" size="30" />&nbsp;
+                            <span class="font_3">例如：必胜客</font>&nbsp;
+                            <button type="button" class="btn" onclick="search_subject('keyword',select_search);">搜索</button>&nbsp;
+                            <button type="button" onclick="search_myfavorite(select_search);">我的收藏</button>&nbsp;
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>&nbsp;</td>
+                        <td><div id="search_result" style="display:none;"></div></td>
+                    </tr>
+                </table>
+            <!--{else}-->
+                <form method="post" name="frm_review" id="frm_review" action="{url item/member/ac/$ac/in_ajax/$_G[in_ajax]/rand/$_G[random]}">
+                <input type="hidden" name="review[sid]" value="$subject[sid]" />
+                <table width="100%" cellspacing="0" cellpadding="0" class="maintable">
+                    <tr>
+                        <td width="100" align="right">主题名称：</td>
+                        <td width="*"><a href="{url item/detail/id/$subject[sid]}" target="_blank">$subject[name]&nbsp;$subject[subname]</a></td>
+                        <td>&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td align="right">点评标题：</td>
+                        <td><input type="text" name="review[title]" class="t_input" size="40" value="$detail[title]" /></td>
+                    </tr>
+                    <tr>
+                        <td width="100" align="right" valign="top"><span class="font_1">*</span>评价分数：</td>
+                        <td width="*">
+                            <div style="width:100%;">
+                            <!--{loop $review_opts $key $val}-->
+                            <select name="review[{$val[flag]}]">
+                                <option value="">-$val[name]-</option>
+                                <option value="0"{if $detail[$val[flag]]=='0'} selected{/if}>差</option>
+                                <option value="1"{if $detail[$val[flag]]=='1'} selected{/if}>一般</option>
+                                <option value="2"{if $detail[$val[flag]]=='2'} selected{/if}>还好</option>
+                                <option value="3"{if $detail[$val[flag]]=='3'} selected{/if}>好</option>
+                                <option value="4"{if $detail[$val[flag]]=='4'} selected{/if}>很好</option>
+                                <option value="5"{if $detail[$val[flag]]=='5'} selected{/if}>非常好</option>
+                            </select>
+                            <!--{/loop}-->
+                            </div>
+                        </td>
+                    </tr>
+                    <!--{if $catcfg['useprice']}-->
+                    <tr>
+                        <td align="right">{if $catcfg[useprice_required]}<span class="font_1">*</span>{/if}$catcfg[useprice_title]：</td>
+                        <td><input type="text" name="review[price]" class="t_input" size="10" value="$detail[price]" />&nbsp;&nbsp;$catcfg[useprice_unit]</td>
+                    </tr>
+                    <!--{/if}-->
+                    <tr>
+                        <td align="right">喜欢程度：</td>
+                        <!--{eval $enjoy_arr = array(0=>'不喜欢',1=>'无所谓',2=>'喜欢',3=>'很喜欢') ;}-->
+                        <td>{print form_radio('review[enjoy]',$enjoy_arr,$detail['enjoy']?$detail['enjoy']:2)}</td></td>
+                    </tr>
+                    <!--{loop $catcfg[taggroup] $val}-->
+                    <tr>
+                        <td align="right">$taggroups[$val][name]：</td>
+                        <!--{eval $detail_tags = $detail['taggroup'] ? @unserialize($detail['taggroup']) : array();}-->
+                        <td>
+                            <!--{if $taggroups[$val][sort]==1}-->
+                            <input type="text" name="review[taggroup][$val]" id="taggroup_$val" size="{if $_G[in_ajax]}35{else}50{/if}" class="t_input" value="{print @implode(',',$detail_tags[$val])}" />&nbsp;多个标签请用逗号","分开
+                            <!--{elseif $taggroups[$val][sort]==2}-->
+                            <!--{eval $tagconfig = explode(',', $taggroups[$val][options]);}-->
+                            <!--{loop $tagconfig $ky $tgval}-->
+                            <input type="checkbox" name="review[taggroup][$val][]" value="$tgval"{if (@in_array($tgval,$detail_tags[$val]))} checked{/if} id="taggroup_{$val}_{$ky}" /><label for="taggroup_{$val}_{$ky}">$tgval</label>&nbsp;
+                            <!--{/loop}-->
+                            <!--{/if}-->
+                        </td>
+                    </tr>
+                    <!--{/loop}-->
+                    <tr>
+                        <td align="right" valign="top">
+                            <span class="font_1">*</span>点评内容：<br />
+                        </td>
+                        <td>
+                            <textarea name="review[content]" style="{if $_G[in_ajax]}width:400px;{else}width:90%;{/if}height:120px;padding:5px;" onkeyup="record_charlen(this,$MOD[review_max],'review_content');">$detail[content]</textarea>
+                            <div class="font_1">请将点评内容限制在 $MOD[review_min] - $MOD[review_max] 个字符以内，当前输入：<span id="review_content" class="font_1">{print strlen($detail[content])}</span></div>
+                        </td>
+                    </tr>
+                    <!--{if $ac == 'review_add' && (!$user->isLogin && $MOD[seccode_review_guest]) || ($user->isLogin && $MOD[seccode_review])}-->
+                    <tr>
+                        <td align="right"><span class="font_1">*</span>验证码：</td>
+                        <td><div id="seccode" style="float:left;"></div><input type="text" name="seccode" onfocus="show_seccode();" class="t_input" /></td>
+                    </tr>
+                    <!--{/if}-->
+                </table>
+                <div class="text_center" id="op_foot">
+                    {if $ac=='review_edit'}<input type="hidden" name="rid" value="$rid" />{/if}
+                    <!--{if defined('IN_AJAX')}-->
+                    <input type="hidden" name="dosubmit" value="yes" />
+                    <button type="button" class="button" onclick="ajaxPost('frm_review', '', 'document_reload');">提交</button>&nbsp;&nbsp;
+                    <button type="reset" class="button">重置</button>&nbsp;&nbsp;
+                    <button type="button" class="button" onclick="dlgClose();">关闭</button>
+                    <!--{else}-->
+                    <input type="hidden" name="forward" value="{print get_forward()}" />
+                    <button type="submit" name="dosubmit" value="yes">提交</button>&nbsp;&nbsp;
+                    <button type="reset">重置</button>&nbsp;&nbsp;
+                    <button type="button" onclick="history.go(-1);">返回</button>
+                    <!--{/if}-->
+                </div>
+                </form>
+            <!--{/if}-->
+            </div>
+<!--{if !defined('IN_AJAX')}-->
+        </div>
+    </div>
+    <div class="clear"></div>
+</div>
+<div class="mybottom"></div>
+</div>
+<!--{eval footer();}-->
+<!--{/if}-->
